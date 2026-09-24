@@ -54,8 +54,16 @@ text, if you teach it how. Three parts:
    `If you need a tool, reply with exactly one line: TOOL <name>: <input>`
 3. In `Harness`, check each reply. If it starts with `TOOL`, parse out the
    name and input, find the matching tool in the `tools` list, run it, and
-   send the result back to the model as a new message so it can finish its
-   answer. Log the tool call!
+   ask the model again so it can finish its answer. Log the tool call!
+   The model remembers nothing, so the second request must contain the whole
+   story: add the model's own reply as an **assistant** message, then the
+   result as a **user** message, e.g. `TOOL RESULT dice: 4`. The request goes
+   from 2 messages (system, user) to 4.
+
+   **Don't use the role `"tool"`** for the result. The API has one, but only
+   for its built-in function calling, which we don't use, and it rejects
+   BadClaude's request with a 400 error mentioning `tool_calls`. In your
+   *log* you can call it whatever you like.
 
 **Watch out:** a weak model will get the format wrong sometimes. What does
 your harness do then?

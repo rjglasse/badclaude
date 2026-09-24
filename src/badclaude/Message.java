@@ -1,8 +1,13 @@
 package badclaude;
 
 /**
- * One chat message. The role is "system", "user" or "assistant"
- * (and later maybe "tool" -- that one is up to you).
+ * One chat message. The role is "system", "user" or "assistant" -- the API
+ * accepts nothing else from BadClaude.
+ *
+ * (The API also has a "tool" role, but it belongs to the provider's built-in
+ * function calling, which BadClaude doesn't use: a "tool" message is rejected
+ * unless it answers a special "tool_calls" message. Send your tool results
+ * back as user messages instead -- see Suggestion 3.)
  */
 public class Message {
 

@@ -56,6 +56,9 @@ public class LlmClient implements Model {
             String details = response.body().isBlank()
                     ? "(empty response -- is base_url right? It usually ends in /v1)"
                     : response.body();
+            if (details.contains("role 'tool'")) {
+                details += "\n(Hint: send tool results back as \"user\" messages, not \"tool\" -- see Suggestion 3.)";
+            }
             throw new RuntimeException("API returned " + response.statusCode() + ": " + details);
         }
 
