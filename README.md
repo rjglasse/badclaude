@@ -71,8 +71,12 @@ run scripts do that for you.
 3. **Reflect as you go.** After each improvement, add an entry to
    [REFLECTIONS.md](REFLECTIONS.md). Ten honest minutes right after it works
    beats an hour of trying to remember at the end of the course.
-4. **You may change any file.** The seams we left (the `Memory` and `Tool`
-   interfaces, the `SEAM:` comments) are hints, not walls.
+4. **Change anything, and keep it tidy.** The starter code is yours: split
+   `run()` into methods, add classes, rename, move and delete. The seams we
+   left (the `Memory` and `Tool` interfaces, the `SEAM:` comments) are hints,
+   not walls. When a new feature would make the code messy, reorganise first
+   (SUGGESTIONS.md marks the moments with **Tidy up first**) and commit that
+   on its own with a message starting `refactor:`.
 5. **Don't upgrade the model.** The point is to make a weak model capable
    through engineering. Changing `model` to something smarter is cheating —
    and also less fun.

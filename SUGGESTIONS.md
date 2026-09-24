@@ -9,6 +9,16 @@ Before you build each one, ask BadClaude to do something it currently fails
 at, and save that conversation. Afterwards, ask the same thing again. That
 before/after pair is your evidence — and it goes in REFLECTIONS.md.
 
+**It's your code now.** The starter code is a starting point, not a framework
+you have to fit into. Split methods, add classes, rename things, move code
+around, delete what you don't need: all fine, and all expected. Every
+improvement adds code, and if you only ever add, `Harness.run()` turns into a
+wall of nested `if`s that nobody (including you) can follow. So several steps
+below start with **Tidy up first**: reorganise what you have, check that
+nothing changed on the outside, commit, and *then* add the new feature.
+Commit tidy-ups on their own with a message starting `refactor:`, so your
+history shows them.
+
 ---
 
 ## 1. Short-term memory ⭐
@@ -102,7 +112,8 @@ whatever you chose in step 3, as long as it's the same every time.)
 
 ### 4a. Tidy up ⭐
 
-Before you can loop, pull your step 3 code out of `run()` into methods, e.g.
+This is the first **Tidy up first** of the course. Before you can loop, pull
+your step 3 code out of `run()` into methods, e.g.
 one that recognises a tool call and splits it into name and input (and says
 "not a tool call" otherwise), and one that finds the tool and runs it.
 
@@ -190,6 +201,13 @@ develop software:
   errors back is exactly how the model fixes its own bugs.
 - `run`: execute the compiled program and return what it printed.
 
+**Tidy up first ⭐:** you're about to add three or more tools, and they need
+to be listed in the system prompt, looked up by name, and run. If that lives
+in `Harness`, it gets crowded. Consider a class of its own (a "toolbox") that
+holds the tools, finds one by name, and writes the tool list for the system
+prompt, so adding a tool means one new line, not edits in three places.
+*Checkpoint:* your step 4 conversations behave exactly as before.
+
 **Safety:** keep everything inside a `workspace/` folder, and put a timeout
 on `run` (infinite loops happen).
 
@@ -214,6 +232,12 @@ Tell BadClaude your name today; ask for it tomorrow.
 **The problem:** Weak models do badly when a task needs many steps at once,
 but fine when each step is small.
 
+**Tidy up first ⭐:** a planner handles one request as *several* small ones,
+so "handle one request" needs to be something you can call. Separate the
+conversation with the user (read a line, print the answer) from answering one
+request (the agent loop from step 4), e.g. a method that takes a request and
+returns the final answer. *Checkpoint:* nothing changes on the outside.
+
 **The fix:** For big requests, first ask the model *only* to produce a
 numbered plan. Then feed the steps back one at a time, each with the results
 so far. Compare against asking for everything at once.
@@ -223,6 +247,12 @@ so far. Compare against asking for everything at once.
 ## 8. A self-checker ⭐⭐⭐
 
 **The problem:** BadClaude never checks its own work.
+
+**Tidy up first ⭐:** the critic is the same model with a different system
+prompt and different instructions. If the code that builds a request and
+calls the model is spread around, you'll end up copying it. Gather it into
+one place that takes a system prompt and messages, so the generator and the
+critic both use it. *Checkpoint:* nothing changes on the outside.
 
 **The fix:** After producing an answer (or code), make a second API call
 asking the model to review it against the original request: "Does this
