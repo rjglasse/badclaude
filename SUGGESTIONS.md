@@ -100,20 +100,6 @@ goes out every lap:
 (`TOOL RESULT ...` is just the format we picked for sending results back; use
 whatever you chose in step 3, as long as it's the same every time.)
 
-### Test with a fake model first
-
-A real model answers differently every run, which makes a loop hard to debug.
-So the harness comes with a fake one: `ScriptedModel` plays back replies from a
-file in `scripts/`, costs nothing, and does the same thing every time.
-
-    ./run.sh --script scripts/two-dice.txt       (Windows: run.bat --script scripts\two-dice.txt)
-
-It can't read your tool results, so its "answers" won't add up — it only tests
-whether *your harness* loops, stops and recovers correctly. The scripts use
-the `TOOL <name>: <input>` format and a tool called `dice`; if you chose
-something else, edit them (replies are separated by a line with just `---`).
-Make your own scripts for anything you want to check.
-
 ### 4a. Tidy up ⭐
 
 Before you can loop, pull your step 3 code out of `run()` into methods, e.g.
@@ -130,10 +116,11 @@ the user's message, and add the model's tool request and the tool result to
 it, as in the table. Print a trace line for every lap, e.g.
 `[lap 1] dice: 1d6 -> 4` — you'll want it when things go wrong.
 
-**Checkpoint:** `./run.sh --script scripts/two-dice.txt`, then type anything.
-You should see lap 1 traced, and then BadClaude prints `TOOL dice: 1d6` *as
-its answer*. That's the bug the next step fixes: your harness still stops
-after one tool call.
+**Checkpoint:** ask "Roll two dice and add them". You should see lap 1
+traced, and then BadClaude most likely prints another `TOOL dice: 1d6` *as its
+answer* (or makes up the second roll). That's the bug the next step fixes:
+your harness still stops after one tool call. The model is different every
+run, so try it a few times.
 
 ### 4c. The `if` becomes a `while` ⭐
 
@@ -142,8 +129,11 @@ Keep going round while the reply is a tool call. Add a limit (say
 model can't loop forever — or spend all your credit.
 
 **Checkpoint:**
-- `scripts/two-dice.txt`: two laps traced, then the final answer printed.
-- `scripts/never-stops.txt`: stops at your limit with your message.
+- "Roll two dice and add them": two laps traced, then a final answer whose
+  sum matches the rolls in your trace.
+- Check the limit: ask for something that needs more laps than `MAX_LAPS`
+  (e.g. "roll ten dice, one at a time, and add them"), or lower `MAX_LAPS`
+  to 1 for a moment. Your harness should stop with your message.
 
 ### 4d. When the model gets it wrong ⭐⭐
 
@@ -167,14 +157,18 @@ For two calls in one reply you have to decide: run just the first, run them
 all, or send back an error asking for one at a time. Any of these can work;
 say in your reflection which you picked and why.
 
-**Checkpoint:** `scripts/bad-format.txt`, `scripts/unknown-tool.txt` and
-`scripts/two-at-once.txt` all end with an answer, not a crash. Check your log:
-every lap should be there.
+**Checkpoint:** provoke it. Ask it to use a tool you don't have ("use the
+teleport tool to go to the moon"), ask for dice in a weird way ("roll a
+twenty-sided die"), and run "roll two dice and add them" a handful of times.
+Every run should end with an answer or your lap-limit message, never a crash.
+Then read your log: find a lap where the model got the format wrong, and
+check that your error message helped it recover.
 
-### Then try the real thing
+### Then push it
 
-Run without `--script` and ask for something that needs several tools. Watch
-your trace. How often does the model use the format correctly?
+Ask for something that needs several different tools. Watch your trace. How
+often does the model use the format correctly, and what does it do when it
+doesn't?
 
 **Going further:** what should go into `Memory` after a turn — every lap, or
 just the question and the final answer? Try both and ask a follow-up question

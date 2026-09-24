@@ -15,7 +15,7 @@ public class Harness {
     // (Suggestion 2).
     private static final String SYSTEM_PROMPT = "You are BadClaude, a helpful assistant.";
 
-    private final Model llm;
+    private final LlmClient llm;
     private final Memory memory;
     private final InteractionLog log;
 
@@ -23,7 +23,7 @@ public class Harness {
     // (Suggestions 3 and 4).
     private final List<Tool> tools = new ArrayList<>();
 
-    public Harness(Model llm, Memory memory, InteractionLog log) {
+    public Harness(LlmClient llm, Memory memory, InteractionLog log) {
         this.llm = llm;
         this.memory = memory;
         this.log = log;

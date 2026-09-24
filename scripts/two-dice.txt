@@ -1,5 +1,0 @@
-TOOL dice: 1d6
----
-TOOL dice: 1d6
----
-I rolled two dice for you and added them up.
