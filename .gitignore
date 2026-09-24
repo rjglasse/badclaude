@@ -1,0 +1,8 @@
+# Compiled classes
+out/
+
+# Your personal config (contains your API key -- never commit it)
+config.properties
+
+# NOTE: logs/ is deliberately NOT ignored. Your session logs are part of
+# your submission. Delete any individual session file you don't want to share.
