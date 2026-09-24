@@ -38,6 +38,10 @@ telling you how it went.
    - Windows: `run.bat`
 5. Chat. Type `/quit` to exit.
 
+No key yet, or want to test without spending anything? `./run.sh --script
+scripts/two-dice.txt` runs BadClaude against a fake model that plays back
+replies from a file (see Suggestion 4).
+
 Then open **[SUGGESTIONS.md](SUGGESTIONS.md)** and start improving.
 
 ## What's in the box
@@ -46,7 +50,9 @@ Then open **[SUGGESTIONS.md](SUGGESTIONS.md)** and start improving.
 | --- | --- |
 | `src/badclaude/Main.java` | Wires everything together and starts the loop |
 | `src/badclaude/Harness.java` | The chat loop: read → send → print |
-| `src/badclaude/LlmClient.java` | Sends messages to the API, returns the reply |
+| `src/badclaude/Model.java` | Interface: anything that can reply to a conversation |
+| `src/badclaude/LlmClient.java` | The real model: sends messages to the API, returns the reply |
+| `src/badclaude/ScriptedModel.java` | A fake model that plays back replies from a script (for testing) |
 | `src/badclaude/Message.java` | One chat message (role + content) |
 | `src/badclaude/Memory.java` | Interface: what the harness remembers |
 | `src/badclaude/NoMemory.java` | The default memory: none at all |
@@ -54,6 +60,7 @@ Then open **[SUGGESTIONS.md](SUGGESTIONS.md)** and start improving.
 | `src/badclaude/Json.java` | Tiny JSON reader/writer (no libraries needed) |
 | `src/badclaude/InteractionLog.java` | Logs every session to `logs/*.jsonl` |
 | `src/badclaude/Config.java` | Reads `config.properties` |
+| `scripts/*.txt` | Scripts for the fake model: `./run.sh --script scripts/two-dice.txt` |
 
 No build tool, no dependencies: `javac` and `java` are all you need, and the
 run scripts do that for you.

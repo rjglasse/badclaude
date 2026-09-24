@@ -1,0 +1,5 @@
+TOOL dice 1d6
+---
+TOOL dice: 1d6
+---
+Sorry about that! I rolled the die for you.

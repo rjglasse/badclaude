@@ -1,0 +1,39 @@
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6
+---
+TOOL dice: 1d6

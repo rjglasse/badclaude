@@ -62,19 +62,118 @@ your harness do then?
 
 *Concepts: interfaces and polymorphism, string parsing, protocols.*
 
-## 4. The agent loop ⭐⭐⭐
+## 4. The agent loop ⭐⭐⭐ (in four small steps)
 
 **The problem:** One tool call per question isn't enough for real tasks.
 "Roll two dice and add them" already needs two calls (or a smarter tool).
 
-**The fix:** Wrap step 3 in a loop: send → if the reply is a tool call, run
-it, append the result, go again → stop when the model answers with plain
-text. Add a maximum number of steps so a confused model can't loop forever.
+**The idea:** You already built one *lap* in step 3: send → the model asks
+for a tool → run it → send the result back → print the answer. An agent just
+keeps doing laps until the model stops asking for tools. That loop is the
+single idea that turns a chatbot into an **agent**. Every real coding
+assistant is this loop with better tools.
 
-This loop is the single idea that turns a chatbot into an **agent**. Every
-real coding assistant is this loop with better tools.
+It is a small change on paper — an `if` becomes a `while` — but it touches
+everything you've built so far, so take it in four steps and check each one
+before moving on.
 
-*Concepts: while loops, termination conditions, state.*
+### What the loop looks like
+
+Here is one turn, "Roll two dice and add them", lap by lap. `messages` is the
+list you send to the model; it grows during the turn and the **whole** list
+goes out every lap:
+
+| Lap | You send (new at the end of `messages`) | The model replies | Your harness does |
+| --- | --- | --- | --- |
+| 1 | `user: Roll two dice and add them` | `TOOL dice: 1d6` | runs dice → `4` |
+| 2 | `assistant: TOOL dice: 1d6`<br>`user: TOOL RESULT dice: 4` | `TOOL dice: 1d6` | runs dice → `3` |
+| 3 | `assistant: TOOL dice: 1d6`<br>`user: TOOL RESULT dice: 3` | `4 + 3 = 7` | not a tool call → print it, turn over |
+
+(`TOOL RESULT ...` is just the format we picked for sending results back; use
+whatever you chose in step 3, as long as it's the same every time.)
+
+### Test with a fake model first
+
+A real model answers differently every run, which makes a loop hard to debug.
+So the harness comes with a fake one: `ScriptedModel` plays back replies from a
+file in `scripts/`, costs nothing, and does the same thing every time.
+
+    ./run.sh --script scripts/two-dice.txt       (Windows: run.bat --script scripts\two-dice.txt)
+
+It can't read your tool results, so its "answers" won't add up — it only tests
+whether *your harness* loops, stops and recovers correctly. The scripts use
+the `TOOL <name>: <input>` format and a tool called `dice`; if you chose
+something else, edit them (replies are separated by a line with just `---`).
+Make your own scripts for anything you want to check.
+
+### 4a. Tidy up ⭐
+
+Before you can loop, pull your step 3 code out of `run()` into methods, e.g.
+one that recognises a tool call and splits it into name and input (and says
+"not a tool call" otherwise), and one that finds the tool and runs it.
+
+**Checkpoint:** nothing changes on the outside. Your step 3 before/after
+conversation still works exactly the same.
+
+### 4b. One turn, many messages ⭐
+
+Inside a turn, keep a `messages` list that starts as system prompt + memory +
+the user's message, and add the model's tool request and the tool result to
+it, as in the table. Print a trace line for every lap, e.g.
+`[lap 1] dice: 1d6 -> 4` — you'll want it when things go wrong.
+
+**Checkpoint:** `./run.sh --script scripts/two-dice.txt`, then type anything.
+You should see lap 1 traced, and then BadClaude prints `TOOL dice: 1d6` *as
+its answer*. That's the bug the next step fixes: your harness still stops
+after one tool call.
+
+### 4c. The `if` becomes a `while` ⭐
+
+Keep going round while the reply is a tool call. Add a limit (say
+`MAX_LAPS = 5`) and stop with a clear message when you hit it, so a confused
+model can't loop forever — or spend all your credit.
+
+**Checkpoint:**
+- `scripts/two-dice.txt`: two laps traced, then the final answer printed.
+- `scripts/never-stops.txt`: stops at your limit with your message.
+
+### 4d. When the model gets it wrong ⭐⭐
+
+Weak models break the format, and they will. Things we've seen a cheap model
+do on "roll two dice and add them":
+
+- a missing colon, or a full stop at the end: `TOOL dice: 1d6.`
+- **two tool calls in one reply**, one per line;
+- a tool that doesn't exist, or an input your tool can't handle.
+
+Don't crash, and don't silently give up. Send the problem back as the tool
+result and let the model try again. That self-correction is a big part of
+what makes agents work, **but only if the error is written for the model**.
+A raw Java exception like `NumberFormatException: For input string: "6."`
+teaches it nothing, and it will just repeat itself until your lap limit
+stops it. Say what was wrong and what right looks like:
+`TOOL RESULT error: dice wants input like 2d6 (no full stop)`, or
+`TOOL RESULT error: no tool called teleport; tools are dice, calculator`.
+
+For two calls in one reply you have to decide: run just the first, run them
+all, or send back an error asking for one at a time. Any of these can work;
+say in your reflection which you picked and why.
+
+**Checkpoint:** `scripts/bad-format.txt`, `scripts/unknown-tool.txt` and
+`scripts/two-at-once.txt` all end with an answer, not a crash. Check your log:
+every lap should be there.
+
+### Then try the real thing
+
+Run without `--script` and ask for something that needs several tools. Watch
+your trace. How often does the model use the format correctly?
+
+**Going further:** what should go into `Memory` after a turn — every lap, or
+just the question and the final answer? Try both and ask a follow-up question
+each way.
+
+*Concepts: refactoring into methods, while loops, termination conditions,
+state that grows, error handling as feedback.*
 
 ## 5. The code runner tool ⭐⭐⭐
 

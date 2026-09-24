@@ -4,4 +4,4 @@ cd /d "%~dp0"
 if not exist out mkdir out
 javac -d out src\badclaude\*.java
 if errorlevel 1 exit /b 1
-java -cp out badclaude.Main
+java -cp out badclaude.Main %*

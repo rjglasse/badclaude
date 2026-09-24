@@ -1,0 +1,5 @@
+TOOL teleport: the moon
+---
+TOOL dice: 1d6
+---
+I can't teleport, but I rolled a die for you instead.

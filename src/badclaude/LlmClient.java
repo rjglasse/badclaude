@@ -13,7 +13,7 @@ import java.util.List;
  *
  * One method: send a list of messages, get the assistant's reply back.
  */
-public class LlmClient {
+public class LlmClient implements Model {
 
     private final String baseUrl;
     private final String apiKey;
@@ -27,6 +27,7 @@ public class LlmClient {
     }
 
     /** Sends the conversation to the model and returns its reply text. */
+    @Override
     public String chat(List<Message> messages) throws Exception {
         // Build the JSON request body by hand -- it is simpler than it looks:
         // {"model": "...", "messages": [{"role": "...", "content": "..."}, ...]}
