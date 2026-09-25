@@ -21,7 +21,7 @@ same idea that powers real coding assistants.
 
 The end-of-course goal is that your harness can handle a request like:
 
-> *"Code a simple Java app to play a 2-player game of roll-the-dice, that is
+> *"Code a simple Java app to play a 2-player game of roll the dice that is
 > tested and evaluated."*
 
 ...by actually writing the files, compiling them, running the tests, and
@@ -42,9 +42,27 @@ telling you how it went.
 
 Then open **[SUGGESTIONS.md](SUGGESTIONS.md)** and start improving.
 
-**Rather work in another language?** BadClaude also comes in Go, Python and
-Rust, one branch each: `git checkout go`, `git checkout python` or
-`git checkout rust`. Same course, same steps, different syntax.
+## Pick your language 🗣️
+
+BadClaude speaks four languages. Same course, same steps, same terrible
+model, different syntax. Each one lives on its own branch of this repository:
+
+| Branch | Language | You'll need | Pick it if you... |
+| --- | --- | --- | --- |
+| `main` 📍 *you are here* | ☕ Java | Java 17+ | ...like your types spelled out and your braces plentiful |
+| `go` | 🐹 Go | Go 1.21+ | ...like small languages, fast builds and `if err != nil` |
+| `python` | 🐍 Python | Python 3.9+ | ...want the least code between you and a working agent |
+| `rust` | 🦀 Rust | Rust (stable) | ...enjoy arguing with a compiler that is usually right |
+
+To switch, check out the branch, e.g. `git checkout python` (Java is on
+`main`). Each branch has its own README, SUGGESTIONS and REFLECTIONS, written
+for that language.
+
+- **Pick early and stick with it.** Your improvements live on the branch you
+  commit them to. Switching halfway means porting your own work by hand,
+  which, to be fair, is a brilliant way to learn a second language.
+- **No language is easy mode.** The model is just as bad in all four, and the
+  steps, the checkpoints and the final boss are the same everywhere.
 
 ## Infrastructure choices
 
