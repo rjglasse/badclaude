@@ -1,5 +1,7 @@
 # BadClaude 🤖
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 BadClaude is a working — but deliberately terrible — harness around a large
 language model. It can chat, and that is *all* it can do:
 
@@ -40,6 +42,60 @@ telling you how it went.
 
 Then open **[SUGGESTIONS.md](SUGGESTIONS.md)** and start improving.
 
+## Infrastructure choices
+
+BadClaude doesn't care *where* its model lives. It talks to anything that
+speaks the OpenAI chat API, so you're welcome to bring your own infra. Most
+of the AI industry is people bolting things onto a model someone else runs.
+Here you get to choose who that someone is.
+
+Pick your adventure:
+
+### 1. ☁️ **The course default**
+- Use the provider and key your teacher hands out.
+- **Why**: Zero setup, and it works on day one. Boring, but honestly the
+  right choice for most people.
+
+### 2. 🔑 **Your own API provider**
+- Any OpenAI-compatible provider works: OpenRouter, Groq, Together, Mistral,
+  and friends. Change `base_url` and `model` in `config.properties`, and put
+  your key in `OPENAI_API_KEY`.
+- **Why**: You learn that "the API" is really a *protocol*, and that providers
+  differ in speed, price, and how creatively they read the spec.
+- **Watch out**: This is your money. Set a spending limit *before* your agent
+  loop gets stuck in an infinite loop at 3 a.m.
+
+### 3. 💻 **Your own hardware**
+- Run a small model on your laptop with [Ollama](https://ollama.com) or
+  [LM Studio](https://lmstudio.ai). Both expose an OpenAI-compatible
+  endpoint, e.g. `base_url=http://localhost:11434/v1` for Ollama.
+- BadClaude refuses to start without a key, and local servers don't need
+  one, so set `api_key=local` (any text will do).
+- **Why**: Free, private, and works offline. Your fan will sound like a small
+  jet engine. That's normal. That's *learning*.
+
+### 4. 🖥️ **A GPU cluster at KTH**
+- Serve an open-weights model on university GPUs (for example with
+  [vLLM](https://docs.vllm.ai), which speaks the same API), then point
+  `base_url` at it. Ask your teacher about access before you start.
+- **Why**: This is how real AI infrastructure works: queues, job scripts,
+  SSH tunnels, and the special joy of your job starting just as you leave
+  for lunch.
+
+### ⚠️ The one rule: keep it bad
+
+Whatever you choose, **the model must stay weak.** The goal is to take a bad
+model and make it a better *agent*, not to swap in a smarter brain and call it
+a day. Rough guide: something in the small/cheap tier (e.g. `gpt-4o-mini`), or
+an open model of about **8B parameters or fewer**. If your model aces the
+roll-the-dice task with no harness at all, it's too good. Swap it for a
+dumber one. 🥔
+
+Changing infrastructure is a great improvement to write up in
+[REFLECTIONS.md](REFLECTIONS.md): what did you have to change, and what broke?
+Record which provider and model you used (the logs already save the model
+name), so your improvements can be compared fairly.
+
 ## What's in the box
 
 | File | What it does |
@@ -79,4 +135,5 @@ run scripts do that for you.
    on its own with a message starting `refactor:`.
 5. **Don't upgrade the model.** The point is to make a weak model capable
    through engineering. Changing `model` to something smarter is cheating —
-   and also less fun.
+   and also less fun. Bringing your own infrastructure is fine, as long as
+   the model stays bad (see [Infrastructure choices](#infrastructure-choices)).
