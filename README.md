@@ -42,6 +42,10 @@ telling you how it went.
 
 Then open **[SUGGESTIONS.md](SUGGESTIONS.md)** and start improving.
 
+**Rather work in another language?** BadClaude also comes in Go, Python and
+Rust, one branch each: `git checkout go`, `git checkout python` or
+`git checkout rust`. Same course, same steps, different syntax.
+
 ## Infrastructure choices
 
 BadClaude doesn't care *where* its model lives. It talks to anything that
