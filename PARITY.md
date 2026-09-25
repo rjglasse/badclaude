@@ -56,7 +56,8 @@ so the study can compare them.
   `.gitkeep`) and never ignored.
 - **Student documents.** `README.md`, `SUGGESTIONS.md` and `REFLECTIONS.md`
   have the same sections, steps, order, difficulty stars, checkpoints, rules
-  and jokes. Only the language changes: code names, commands, concept lists,
+  and jokes, plus the same "Pick your language" section (only the "you are
+  here" marker moves). Only the language changes: code names, commands, concept lists,
   example errors, the compile/run tools of Suggestion 5, and the final-boss
   request (*"Code a simple <language> app to play a 2-player game of roll the
   dice that is tested and evaluated."*).
