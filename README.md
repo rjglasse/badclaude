@@ -161,3 +161,8 @@ scripts start it for you.
    through engineering. Changing `model` to something smarter is cheating —
    and also less fun. Bringing your own infrastructure is fine, as long as
    the model stays bad (see [Infrastructure choices](#infrastructure-choices)).
+
+## Designed by
+
+- Alexander Baltatzis <alba@kth.se>
+- Ric Glassey <glassey@kth.se>
