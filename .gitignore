@@ -1,5 +1,6 @@
-# Compiled classes
-out/
+# Built program (go build)
+/badclaude
+/badclaude.exe
 
 # Your personal config (contains your API key -- never commit it)
 config.properties

@@ -2,7 +2,7 @@
 
 Work roughly in order — each idea builds on the previous ones. Difficulty is
 marked ⭐ (an afternoon) to ⭐⭐⭐ (a project week). Everything here is doable
-with what you learned in CS1/CS2: classes, interfaces, lists, maps, loops,
+with what you learned in CS1/CS2: structs, interfaces, slices, maps, loops,
 recursion, and file I/O.
 
 Before you build each one, ask BadClaude to do something it currently fails
@@ -10,9 +10,9 @@ at, and save that conversation. Afterwards, ask the same thing again. That
 before/after pair is your evidence — and it goes in REFLECTIONS.md.
 
 **It's your code now.** The starter code is a starting point, not a framework
-you have to fit into. Split methods, add classes, rename things, move code
+you have to fit into. Split methods, add types, rename things, move code
 around, delete what you don't need: all fine, and all expected. Every
-improvement adds code, and if you only ever add, `Harness.run()` turns into a
+improvement adds code, and if you only ever add, `Harness.Run()` turns into a
 wall of nested `if`s that nobody (including you) can follow. So several steps
 below start with **Tidy up first**: reorganise what you have, check that
 nothing changed on the outside, commit, and *then* add the new feature.
@@ -27,27 +27,27 @@ history shows them.
 throws everything away. The model never "remembers" anything — chat apps
 just re-send the whole conversation every time.
 
-**The fix:** Write a `ConversationMemory` class that implements `Memory`,
-stores every message in a list, and returns them all in `recall()`. Swap it
-in in `Main.java`.
+**The fix:** Write a `ConversationMemory` type that implements `Memory`,
+stores every message in a slice, and returns them all in `Recall()`. Swap it
+in in `main.go`.
 
 **Going further:** Conversations can get too long (and cost more). Keep only
 the last N messages — notice this is queue behaviour. What breaks if N is
 too small?
 
-*Concepts: interfaces, `ArrayList`, queues.*
+*Concepts: interfaces, slices, queues.*
 
 ## 2. A real system prompt ⭐
 
 **The problem:** "You are BadClaude, a helpful assistant" gives the model no
 useful instructions.
 
-**The fix:** Experiment with `SYSTEM_PROMPT` in `Harness.java`. Give it a
+**The fix:** Experiment with `systemPrompt` in `harness.go`. Give it a
 role, rules, output format requirements. Try to make it concise, or refuse
 to answer off-topic questions, or always answer in the style of a pirate —
 and observe how reliably a *weak* model actually follows instructions.
 
-*Concepts: none new — this one teaches you about the model, not about Java.*
+*Concepts: none new — this one teaches you about the model, not about Go.*
 
 ## 3. Tools ⭐⭐
 
@@ -91,9 +91,9 @@ keeps doing laps until the model stops asking for tools. That loop is the
 single idea that turns a chatbot into an **agent**. Every real coding
 assistant is this loop with better tools.
 
-It is a small change on paper — an `if` becomes a `while` — but it touches
-everything you've built so far, so take it in four steps and check each one
-before moving on.
+It is a small change on paper — an `if` becomes a `for` (Go's while loop) —
+but it touches everything you've built so far, so take it in four steps and
+check each one before moving on.
 
 ### What the loop looks like
 
@@ -113,7 +113,7 @@ whatever you chose in step 3, as long as it's the same every time.)
 ### 4a. Tidy up ⭐
 
 This is the first **Tidy up first** of the course. Before you can loop, pull
-your step 3 code out of `run()` into methods, e.g.
+your step 3 code out of `Run()` into methods, e.g.
 one that recognises a tool call and splits it into name and input (and says
 "not a tool call" otherwise), and one that finds the tool and runs it.
 
@@ -133,17 +133,17 @@ answer* (or makes up the second roll). That's the bug the next step fixes:
 your harness still stops after one tool call. The model is different every
 run, so try it a few times.
 
-### 4c. The `if` becomes a `while` ⭐
+### 4c. The `if` becomes a `for` ⭐
 
 Keep going round while the reply is a tool call. Add a limit (say
-`MAX_LAPS = 5`) and stop with a clear message when you hit it, so a confused
-model can't loop forever — or spend all your credit.
+`const maxLaps = 5`) and stop with a clear message when you hit it, so a
+confused model can't loop forever — or spend all your credit.
 
 **Checkpoint:**
 - "Roll two dice and add them": two laps traced, then a final answer whose
   sum matches the rolls in your trace.
-- Check the limit: ask for something that needs more laps than `MAX_LAPS`
-  (e.g. "roll ten dice, one at a time, and add them"), or lower `MAX_LAPS`
+- Check the limit: ask for something that needs more laps than `maxLaps`
+  (e.g. "roll ten dice, one at a time, and add them"), or lower `maxLaps`
   to 1 for a moment. Your harness should stop with your message.
 
 ### 4d. When the model gets it wrong ⭐⭐
@@ -158,7 +158,7 @@ do on "roll two dice and add them":
 Don't crash, and don't silently give up. Send the problem back as the tool
 result and let the model try again. That self-correction is a big part of
 what makes agents work, **but only if the error is written for the model**.
-A raw Java exception like `NumberFormatException: For input string: "6."`
+A raw Go error like `strconv.Atoi: parsing "6.": invalid syntax`
 teaches it nothing, and it will just repeat itself until your lap limit
 stops it. Say what was wrong and what right looks like:
 `TOOL RESULT error: dice wants input like 2d6 (no full stop)`, or
@@ -185,25 +185,26 @@ doesn't?
 just the question and the final answer? Try both and ask a follow-up question
 each way.
 
-*Concepts: refactoring into methods, while loops, termination conditions,
-state that grows, error handling as feedback.*
+*Concepts: refactoring into methods, while-style `for` loops, termination
+conditions, state that grows, error handling as feedback.*
 
 ## 5. The code runner tool ⭐⭐⭐
 
-**The problem:** BadClaude can describe a Java program but can't build one.
+**The problem:** BadClaude can describe a Go program but can't build one.
 
 **The fix:** A tool (or family of tools) that lets the model actually
 develop software:
 
 - `write_file`: save model-provided source code to a workspace folder.
-- `compile`: run `javac` on the workspace using `ProcessBuilder`, capture
-  the output, and return it — **including compile errors**, because feeding
-  errors back is exactly how the model fixes its own bugs.
+- `compile`: run `go build` (and `go vet`, or `go test` for the tests) on
+  the workspace using `os/exec`, capture the output, and return it —
+  **including compile errors**, because feeding errors back is exactly how
+  the model fixes its own bugs.
 - `run`: execute the compiled program and return what it printed.
 
 **Tidy up first ⭐:** you're about to add three or more tools, and they need
 to be listed in the system prompt, looked up by name, and run. If that lives
-in `Harness`, it gets crowded. Consider a class of its own (a "toolbox") that
+in `Harness`, it gets crowded. Consider a type of its own (a "toolbox") that
 holds the tools, finds one by name, and writes the tool list for the system
 prompt, so adding a tool means one new line, not edits in three places.
 *Checkpoint:* your step 4 conversations behave exactly as before.
@@ -276,7 +277,7 @@ and they teach you the plumbing.
 When you have (at least) suggestions 1, 3, 4 and 5, type this into your
 harness:
 
-> Code a simple Java app to play a 2-player game of roll the dice that is
+> Code a simple Go app to play a 2-player game of roll the dice that is
 > tested and evaluated.
 
 Watch the log. Where does it fail? That failure is your next improvement.

@@ -15,9 +15,9 @@ Copy the template for each entry.
 - **What I built:** <2–3 sentences: what changed in the code and why you chose this improvement next>
 - **Before:** <what BadClaude did on a test prompt before — quote or paraphrase from your logs>
 - **After:** <same prompt afterwards — what changed?>
-- **What surprised me:** <anything unexpected — about the model, about Java, about the difficulty>
+- **What surprised me:** <anything unexpected — about the model, about Go, about the difficulty>
 - **What I'd do differently:** <optional>
-- **Concepts used:** <e.g. interfaces, ArrayList, ProcessBuilder, recursion>
+- **Concepts used:** <e.g. interfaces, slices, os/exec, recursion>
 
 ---
 
