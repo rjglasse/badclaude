@@ -1,0 +1,11 @@
+[package]
+name = "badclaude"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# ureq sends HTTP requests; serde_json reads and writes JSON.
+# "preserve_order" keeps JSON keys in the order we write them, so log lines
+# read time, role, content.
+serde_json = { version = "1.0.151", features = ["preserve_order"] }
+ureq = "3.4.2"

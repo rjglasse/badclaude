@@ -1,5 +1,5 @@
-# Compiled classes
-out/
+# Build output (cargo puts everything here)
+target/
 
 # Your personal config (contains your API key -- never commit it)
 config.properties

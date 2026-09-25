@@ -9,7 +9,7 @@ language model. It can chat, and that is *all* it can do:
   message after telling it, and see what happens.
 - It **can't calculate** reliably. Ask it for `348213 * 917 - 44` and check
   the answer with a real calculator.
-- It **can't touch the world**. It can describe a Java program beautifully,
+- It **can't touch the world**. It can describe a Rust program beautifully,
   but it cannot save a file, compile anything, or run a test.
 - It **gives up after one reply**. No planning, no retrying, no checking its
   own work.
@@ -21,7 +21,7 @@ same idea that powers real coding assistants.
 
 The end-of-course goal is that your harness can handle a request like:
 
-> *"Code a simple Java app to play a 2-player game of roll-the-dice, that is
+> *"Code a simple Rust app to play a 2-player game of roll-the-dice, that is
 > tested and evaluated."*
 
 ...by actually writing the files, compiling them, running the tests, and
@@ -29,7 +29,8 @@ telling you how it went.
 
 ## Getting started
 
-1. Install Java 17 or newer (`java -version` to check).
+1. Install Rust (stable) with [rustup](https://rustup.rs) (`cargo --version`
+   to check).
 2. Get an API key (your teacher will tell you which provider the course uses).
 3. Copy `config.example.properties` to `config.properties` and fill in
    `base_url` and `model`. Put your key in the `OPENAI_API_KEY` environment
@@ -38,13 +39,17 @@ telling you how it went.
 4. Run it:
    - macOS / Linux: `./run.sh`
    - Windows: `run.bat`
+
+   The first build downloads two crates (Rust libraries) and takes a
+   minute. After that it starts straight away.
 5. Chat. Type `/quit` to exit.
 
 Then open **[SUGGESTIONS.md](SUGGESTIONS.md)** and start improving.
 
-**Rather work in another language?** BadClaude also comes in Go, Python and
-Rust, one branch each: `git checkout go`, `git checkout python` or
-`git checkout rust`. Same course, same steps, different syntax.
+**Rather work in another language?** This is the Rust branch. BadClaude
+also comes in Java, Go and Python, one branch each: `git checkout main`
+(Java), `git checkout go` or `git checkout python`. Same course, same steps,
+different syntax.
 
 ## Infrastructure choices
 
@@ -104,19 +109,20 @@ name), so your improvements can be compared fairly.
 
 | File | What it does |
 | --- | --- |
-| `src/badclaude/Main.java` | Wires everything together and starts the loop |
-| `src/badclaude/Harness.java` | The chat loop: read → send → print |
-| `src/badclaude/LlmClient.java` | Sends messages to the API, returns the reply |
-| `src/badclaude/Message.java` | One chat message (role + content) |
-| `src/badclaude/Memory.java` | Interface: what the harness remembers |
-| `src/badclaude/NoMemory.java` | The default memory: none at all |
-| `src/badclaude/Tool.java` | Interface: things the model can ask the harness to do |
-| `src/badclaude/Json.java` | Tiny JSON reader/writer (no libraries needed) |
-| `src/badclaude/InteractionLog.java` | Logs every session to `logs/*.jsonl` |
-| `src/badclaude/Config.java` | Reads `config.properties` |
+| `src/main.rs` | Wires everything together and starts the loop |
+| `src/harness.rs` | The chat loop: read → send → print |
+| `src/llm_client.rs` | Sends messages to the API, returns the reply |
+| `src/message.rs` | One chat message (role + content) |
+| `src/memory.rs` | Trait: what the harness remembers |
+| `src/no_memory.rs` | The default memory: none at all |
+| `src/tool.rs` | Trait: things the model can ask the harness to do |
+| `src/interaction_log.rs` | Logs every session to `logs/*.jsonl` |
+| `src/config.rs` | Reads `config.properties` |
+| `Cargo.toml` | The project file: name and the two crates it uses |
 
-No build tool, no dependencies: `javac` and `java` are all you need, and the
-run scripts do that for you.
+Cargo builds everything, and the run scripts call it for you. There are just
+two dependencies, because Rust's standard library can't speak HTTPS:
+`ureq` (sends the HTTP requests) and `serde_json` (reads and writes JSON).
 
 ## Rules of the game
 
@@ -132,8 +138,8 @@ run scripts do that for you.
    [REFLECTIONS.md](REFLECTIONS.md). Ten honest minutes right after it works
    beats an hour of trying to remember at the end of the course.
 4. **Change anything, and keep it tidy.** The starter code is yours: split
-   `run()` into methods, add classes, rename, move and delete. The seams we
-   left (the `Memory` and `Tool` interfaces, the `SEAM:` comments) are hints,
+   `run()` into methods, add structs and modules, rename, move and delete.
+   The seams we left (the `Memory` and `Tool` traits, the `SEAM:` comments) are hints,
    not walls. When a new feature would make the code messy, reorganise first
    (SUGGESTIONS.md marks the moments with **Tidy up first**) and commit that
    on its own with a message starting `refactor:`.

@@ -2,17 +2,17 @@
 
 Work roughly in order — each idea builds on the previous ones. Difficulty is
 marked ⭐ (an afternoon) to ⭐⭐⭐ (a project week). Everything here is doable
-with what you learned in CS1/CS2: classes, interfaces, lists, maps, loops,
-recursion, and file I/O.
+with what you learned in CS1/CS2: structs, traits, lists (`Vec`), maps,
+loops, recursion, and file I/O.
 
 Before you build each one, ask BadClaude to do something it currently fails
 at, and save that conversation. Afterwards, ask the same thing again. That
 before/after pair is your evidence — and it goes in REFLECTIONS.md.
 
 **It's your code now.** The starter code is a starting point, not a framework
-you have to fit into. Split methods, add classes, rename things, move code
+you have to fit into. Split methods, add structs, rename things, move code
 around, delete what you don't need: all fine, and all expected. Every
-improvement adds code, and if you only ever add, `Harness.run()` turns into a
+improvement adds code, and if you only ever add, `Harness::run()` turns into a
 wall of nested `if`s that nobody (including you) can follow. So several steps
 below start with **Tidy up first**: reorganise what you have, check that
 nothing changed on the outside, commit, and *then* add the new feature.
@@ -27,27 +27,27 @@ history shows them.
 throws everything away. The model never "remembers" anything — chat apps
 just re-send the whole conversation every time.
 
-**The fix:** Write a `ConversationMemory` class that implements `Memory`,
-stores every message in a list, and returns them all in `recall()`. Swap it
-in in `Main.java`.
+**The fix:** Write a `ConversationMemory` struct that implements the `Memory`
+trait, stores every message in a `Vec`, and returns them all in `recall()`.
+Swap it in in `main.rs`.
 
 **Going further:** Conversations can get too long (and cost more). Keep only
 the last N messages — notice this is queue behaviour. What breaks if N is
 too small?
 
-*Concepts: interfaces, `ArrayList`, queues.*
+*Concepts: traits, `Vec`, queues.*
 
 ## 2. A real system prompt ⭐
 
 **The problem:** "You are BadClaude, a helpful assistant" gives the model no
 useful instructions.
 
-**The fix:** Experiment with `SYSTEM_PROMPT` in `Harness.java`. Give it a
+**The fix:** Experiment with `SYSTEM_PROMPT` in `harness.rs`. Give it a
 role, rules, output format requirements. Try to make it concise, or refuse
 to answer off-topic questions, or always answer in the style of a pirate —
 and observe how reliably a *weak* model actually follows instructions.
 
-*Concepts: none new — this one teaches you about the model, not about Java.*
+*Concepts: none new — this one teaches you about the model, not about Rust.*
 
 ## 3. Tools ⭐⭐
 
@@ -57,7 +57,7 @@ dice, or read a file.
 **The fix:** The model can't *run* a tool — but it can *ask* for one, in
 text, if you teach it how. Three parts:
 
-1. Implement the `Tool` interface. Good first tools: a **calculator**, a
+1. Implement the `Tool` trait. Good first tools: a **calculator**, a
    **dice roller**, a **file reader**, a **file writer**, a **clock**.
 2. Tell the model about them in the system prompt, including the exact
    format to use, e.g.:
@@ -78,7 +78,7 @@ text, if you teach it how. Three parts:
 **Watch out:** a weak model will get the format wrong sometimes. What does
 your harness do then?
 
-*Concepts: interfaces and polymorphism, string parsing, protocols.*
+*Concepts: traits and polymorphism (`Box<dyn Tool>`), string parsing, protocols.*
 
 ## 4. The agent loop ⭐⭐⭐ (in four small steps)
 
@@ -158,8 +158,8 @@ do on "roll two dice and add them":
 Don't crash, and don't silently give up. Send the problem back as the tool
 result and let the model try again. That self-correction is a big part of
 what makes agents work, **but only if the error is written for the model**.
-A raw Java exception like `NumberFormatException: For input string: "6."`
-teaches it nothing, and it will just repeat itself until your lap limit
+A raw Rust error like `invalid digit found in string` (what
+`"6.".parse::<u32>()` gives you) teaches it nothing, and it will just repeat itself until your lap limit
 stops it. Say what was wrong and what right looks like:
 `TOOL RESULT error: dice wants input like 2d6 (no full stop)`, or
 `TOOL RESULT error: no tool called teleport; tools are dice, calculator`.
@@ -190,26 +190,28 @@ state that grows, error handling as feedback.*
 
 ## 5. The code runner tool ⭐⭐⭐
 
-**The problem:** BadClaude can describe a Java program but can't build one.
+**The problem:** BadClaude can describe a Rust program but can't build one.
 
 **The fix:** A tool (or family of tools) that lets the model actually
 develop software:
 
 - `write_file`: save model-provided source code to a workspace folder.
-- `compile`: run `javac` on the workspace using `ProcessBuilder`, capture
+- `compile`: run `cargo build` (or `cargo test`, which also runs the tests)
+  on a cargo project in `workspace/` using `std::process::Command`, capture
   the output, and return it — **including compile errors**, because feeding
   errors back is exactly how the model fixes its own bugs.
 - `run`: execute the compiled program and return what it printed.
 
 **Tidy up first ⭐:** you're about to add three or more tools, and they need
 to be listed in the system prompt, looked up by name, and run. If that lives
-in `Harness`, it gets crowded. Consider a class of its own (a "toolbox") that
+in `Harness`, it gets crowded. Consider a struct of its own (a "toolbox") that
 holds the tools, finds one by name, and writes the tool list for the system
 prompt, so adding a tool means one new line, not edits in three places.
 *Checkpoint:* your step 4 conversations behave exactly as before.
 
 **Safety:** keep everything inside a `workspace/` folder, and put a timeout
-on `run` (infinite loops happen).
+on `run` (infinite loops happen). `std::process::Command` has no timeout of
+its own: start the program with `spawn()` and keep checking `try_wait()`.
 
 With this plus the agent loop, the end-of-course request — the tested,
 evaluated 2-player dice game — is within reach. Try it!
@@ -276,7 +278,7 @@ and they teach you the plumbing.
 When you have (at least) suggestions 1, 3, 4 and 5, type this into your
 harness:
 
-> Code a simple Java app to play a 2-player game of roll the dice that is
+> Code a simple Rust app to play a 2-player game of roll the dice that is
 > tested and evaluated.
 
 Watch the log. Where does it fail? That failure is your next improvement.

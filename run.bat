@@ -1,7 +1,4 @@
 @echo off
-rem Compile and run BadClaude. Needs Java 17 or newer on your PATH.
+rem Build (if needed) and run BadClaude. Needs Rust (stable, via rustup) on your PATH.
 cd /d "%~dp0"
-if not exist out mkdir out
-javac -d out src\badclaude\*.java
-if errorlevel 1 exit /b 1
-java -cp out badclaude.Main
+cargo run --quiet
