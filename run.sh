@@ -1,6 +1,5 @@
 #!/bin/sh
-# Compile and run BadClaude. Needs Java 17 or newer on your PATH.
+# Run BadClaude. Needs Python 3.9 or newer on your PATH.
+# There is nothing to compile: Python reads the badclaude/ folder directly.
 cd "$(dirname "$0")" || exit 1
-mkdir -p out
-javac -d out src/badclaude/*.java || exit 1
-java -cp out badclaude.Main
+python3 -m badclaude

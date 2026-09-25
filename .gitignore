@@ -1,5 +1,6 @@
-# Compiled classes
-out/
+# Python's compiled bytecode (made automatically when you run the code)
+__pycache__/
+*.pyc
 
 # Your personal config (contains your API key -- never commit it)
 config.properties
